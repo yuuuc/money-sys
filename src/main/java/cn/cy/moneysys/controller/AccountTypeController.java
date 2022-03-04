@@ -6,7 +6,6 @@ import cn.cy.moneysys.service.AccountTypeService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +26,17 @@ public class AccountTypeController {
             return Msg.createMsg("ok").addData("accountsTypes",accountsTypes);
         }catch (Exception e){
             log.info("getAccountTypeAll: " + e.getMessage());
+            return Msg.createMsg("ng");
+        }
+    }
+
+    @GetMapping("getAccountTypeByTitle")
+    public Msg getAccountTypeByTitle(@RequestParam(value = "value") String value){
+        try {
+            AccountsType accountsType = accountTypeService.selectAccountTypeByTitle(value);
+            return Msg.createMsg("ok").addData("accountsType",accountsType);
+        } catch (Exception e) {
+            log.info("getAccountTypeByTitle: " + e.getMessage());
             return Msg.createMsg("ng");
         }
     }
@@ -56,9 +66,10 @@ public class AccountTypeController {
     }
 
     @PostMapping("deleteAccountType")
-    public Msg deleteAccountType(@RequestBody String aid){
+    public Msg deleteAccountType(@RequestBody AccountsType accountsType){
         try {
-            accountTypeService.deleteAccountType(aid);
+            System.out.println(accountsType.getAid_t());
+            accountTypeService.deleteAccountType(accountsType.getAid_t());
             return Msg.createMsg("ok");
         }catch (Exception e){
             log.info("deleteAccountType: " + e.getMessage());

@@ -12,6 +12,8 @@ public interface AccountService {
 
     Page<Account> selectAccountListByUserId(Page accountPage, String uid);
 
+    Page<Account> selectAccountListByUsername(Page accountPage, String value);
+
     List<Account> selectAccountListByUserIdAndTime(String uid, Date startTime, Date endTime) throws SelectAccountSizeMoreThan30Exception;
 
     void insetAccount(Account account);

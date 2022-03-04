@@ -24,11 +24,10 @@ public class CommonController {
     /**
      * login
      * @param user
-     * @param request
      * @return
      */
     @PostMapping("/login")
-    public Msg login(@RequestBody User user, HttpServletRequest request){
+    public Msg login(@RequestBody User user){
         try{
             System.out.println(user);
             User dbUser = userService.selectByNameAndPassword(user);
@@ -36,11 +35,7 @@ public class CommonController {
             if(dbUser == null){
                 return Msg.createMsg("fail");
             }else{
-
-                HttpSession session = request.getSession();
-                session.setAttribute("uid",dbUser.getUid());
-                session.setMaxInactiveInterval(120 * 60);
-                return Msg.createMsg("success");
+                return Msg.createMsg("success").addData("uid",dbUser.getUid());
             }
         }catch (Exception e){
             log.info("login: " + e.getMessage());

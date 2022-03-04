@@ -18,4 +18,6 @@ public interface AccountTypeService {
 
     void updateAccountType(AccountsType accountsType);
 
+    AccountsType selectAccountTypeByTitle(String value);
+
 }

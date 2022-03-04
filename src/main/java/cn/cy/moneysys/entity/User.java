@@ -30,7 +30,7 @@ public class User {
   @JSONField(serialize = false)
   @TableField("password")
   private String password;
-  @NotNull(message = "电话不能为空")
+  @NotNull(message = "手机号不能为空")
   @TableField("tel")
   private String tel;
   @TableField("create_time")

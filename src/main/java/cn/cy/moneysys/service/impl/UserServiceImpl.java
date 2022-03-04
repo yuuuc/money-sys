@@ -1,6 +1,7 @@
 package cn.cy.moneysys.service.impl;
 
 import cn.cy.moneysys.Exception.UsernameInDBException;
+import cn.cy.moneysys.entity.AccountsType;
 import cn.cy.moneysys.entity.User;
 import cn.cy.moneysys.mapper.UserMapper;
 import cn.cy.moneysys.service.UserService;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -35,8 +37,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
   public Page<User> selectUserList(Page userPage) {
-        Page page = userMapper.selectPage(userPage, new QueryWrapper<User>());
-        return page;
+        Page tempPage = userMapper.selectPage(userPage, new QueryWrapper<User>().orderByAsc("create_time"));
+        if (tempPage.getCurrent() > tempPage.getPages()){
+            userPage.setCurrent(tempPage.getPages());
+            tempPage = userMapper.selectPage(userPage, new QueryWrapper<User>());
+        }
+        if (tempPage.getCurrent() <= 0) {
+            userPage.setCurrent(1);
+            tempPage = userMapper.selectPage(userPage, new QueryWrapper<User>());
+        }
+        return tempPage;
   }
 
   @Override
@@ -46,19 +56,31 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Page<User> selectUserByNameOrTel(Page userPage, String value) {
-        return userMapper.selectPage(userPage,new QueryWrapper<User>().eq("name",value).or().eq("tel",value));
+        return userMapper.selectPage(userPage,new QueryWrapper<User>().eq("username",value).or().eq("tel",value));
   }
 
   @Override
   public void updateUser(User user) throws UnsupportedEncodingException, NoSuchAlgorithmException, UsernameInDBException {
       String username = user.getUsername();
       User isUser = userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
-      if(isUser != null){
+      if(isUser != null && !user.getUid().equals(isUser.getUid())){
           throw new UsernameInDBException("database have " + username +" that you don't repeat");
       }
-      String encoder = MD5.EncoderByMd5(user.getPassword());
-      user.setPassword(encoder);
-      userMapper.updateById(user);
+      User dbUser = userMapper.selectById(user.getUid());
+      if(user.getPassword() != null ){
+          String encoder = MD5.EncoderByMd5(user.getPassword());
+          dbUser.setPassword(encoder);
+      }
+      if(user.getName() != null){
+          dbUser.setName(user.getName());
+      }
+      if(user.getUsername() != null){
+          dbUser.setUsername(user.getUsername());
+      }
+      if(user.getTel() != null){
+          dbUser.setTel(user.getTel());
+      }
+      userMapper.updateById(dbUser);
   }
 
   @Override

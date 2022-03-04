@@ -1,4 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.cy.moneysys.mapper.AccountMapper">
+    <select id="getAccountsAndUsername" resultType="cn.cy.moneysys.entity.Account">
+        select accounts.* ,user.name as username, accounts_type.title as type from accounts,user,accounts_type
+        where accounts.uid = user.uid and accounts.aid_t = accounts_type.aid_t
+        order by time desc
+        limit #{start},#{size}
+    </select>
+    <select id="getAccountsByUsername" resultType="cn.cy.moneysys.entity.Account">
+        select accounts.* ,user.name as username, accounts_type.title as type from accounts,user,accounts_type
+        where accounts.uid = user.uid and accounts.aid_t = accounts_type.aid_t and user.name = #{value}
+        order by time desc
+        limit #{start},#{size}
+    </select>
+    <select id="getCountByUid" resultType="java.lang.Long">
+        select count(*) from accounts,user,accounts_type
+        where accounts.uid = user.uid and accounts.aid_t = accounts_type.aid_t and user.name = #{value}
+    </select>
+    <select id="getAccountsByTime" resultType="cn.cy.moneysys.entity.Account">
+        select accounts.* ,user.name as username, accounts_type.title as type from accounts,user,accounts_type
+        where accounts.uid = user.uid and accounts.aid_t = accounts_type.aid_t and user.uid = #{uid} and accounts.time between #{startTime} and #{endTime}
+        order by time desc
+    </select>
 </mapper>

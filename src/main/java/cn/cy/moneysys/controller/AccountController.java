@@ -8,9 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 @Slf4j
 @RequestMapping("/account")
@@ -43,16 +45,16 @@ public class AccountController {
      * getAccountListByUserId
      * @param current
      * @param size
-     * @param uid
+     * @param value
      * @return
      */
     @GetMapping("getAccountsByUser")
     public Msg getAccountListByUserId(@RequestParam(value = "current", required = false, defaultValue = "1") Long current,
                                       @RequestParam(value = "size", required = false, defaultValue = "15") Long size,
-                                      @RequestParam(value = "uid", required = true) String uid){
+                                      @RequestParam(value = "search", required = true) String value){
         try{
             Page<Account> page = new Page<>(current, size);
-            Page<Account> accountPage = accountService.selectAccountListByUserId(page, uid);
+            Page<Account> accountPage = accountService.selectAccountListByUsername(page, value);
             return Msg.createMsg("ok").addData("accountPage",accountPage);
         }catch (Exception e){
             log.info("getAccountListByUserId: "+e.getMessage());
@@ -61,10 +63,14 @@ public class AccountController {
     }
 
     @GetMapping("getAccountsByTime")
-    public Msg getAccountListByTime(@RequestParam(value = "startTime", required = false) Date startTime,
-                                    @RequestParam(value = "endTime", required = false) Date endTime,
+    public Msg getAccountListByTime(@RequestParam(value = "startTime", required = false) String start,
+                                    @RequestParam(value = "endTime", required = false) String end,
                                     @RequestParam(value = "uid", required = true) String uid) {
         try{
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date startTime = simpleDateFormat.parse(start);
+            Date endTime = simpleDateFormat.parse(end);
             List<Account> accounts = accountService.selectAccountListByUserIdAndTime(uid, startTime, endTime);
             return Msg.createMsg("ok").addData("accounts",accounts);
         }catch (Exception e){
@@ -85,9 +91,9 @@ public class AccountController {
     }
 
     @PostMapping("deleteAccount")
-    public Msg deleteAccount(@RequestBody String id){
+    public Msg deleteAccount(@RequestBody Account account){
         try{
-            accountService.deleteAccount(id);
+            accountService.deleteAccount(account.getAid());
             return Msg.createMsg("ok");
         }catch (Exception e){
             log.info("deleteAccount: " + e.getMessage());

@@ -1,5 +1,6 @@
 package cn.cy.moneysys.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -31,9 +32,13 @@ public class Account implements Serializable {
   @TableField("isOut")
   private Integer isOut;
   @TableField("isDel")
-  private Integer isDel;
+  private Integer isDel = 0;
   @TableField("time")
   private Date time;
   @TableField("description")
   private String description;
+  @JSONField(deserialize = false)
+  private String username;
+  @JSONField(deserialize = false)
+  private String type;
 }

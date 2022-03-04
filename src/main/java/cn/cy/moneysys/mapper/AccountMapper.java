@@ -10,5 +10,11 @@ import java.util.List;
 
 @Mapper
 public interface AccountMapper extends BaseMapper<Account> {
+    public List<Account> getAccountsAndUsername(@Param("start") Long current, @Param("size") Long size);
 
+    public List<Account> getAccountsByUsername(@Param("start") Long current, @Param("size") Long size, @Param("value") String value);
+
+    public List<Account> getAccountsByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime,@Param("uid") String uid);
+
+    public Long getCountByUid(@Param("value") String value);
 }

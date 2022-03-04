@@ -19,17 +19,21 @@ public class rootInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         try{
-            HttpSession session = request.getSession();
-            String uid = (String)session.getAttribute("uid");
+            if(request.getMethod().equals("OPTIONS")){
+                response.setStatus((HttpServletResponse.SC_OK));
+                return true;
+            }
+            String uid = request.getHeader("Auth");
+            System.out.println(uid);
             User user = userService.selectUserById(uid);
             if(user != null){
                 return true;
             }else{
-                response.setStatus(403);
+                response.setStatus(401);
                 return false;
             }
         }catch (Exception e){
-            response.setStatus(403);
+            response.setStatus(401);
             return false;
         }
     }

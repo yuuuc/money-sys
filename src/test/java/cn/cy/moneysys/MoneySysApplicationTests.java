@@ -46,10 +46,10 @@ class MoneySysApplicationTests {
    * insert
    */
   void accountMapper(){
-    Date date = new Date();
-    Account account = new Account("1","1","1",2000.00D,0,0,date,"123");
-    int insert = accountMapper.insert(account);
-    System.out.println(insert);
+//    Date date = new Date();
+//    Account account = new Account("1","1","1",2000.00D,0,0,date,"123");
+//    int insert = accountMapper.insert(account);
+//    System.out.println(insert);
   }
 
   @Test
@@ -68,10 +68,10 @@ class MoneySysApplicationTests {
    * update
    */
   void accountUpdate(){
-    Date date = new Date();
-    Account account = new Account("1","1","1",3000.00D,0,0,date,"1111111");
-    int i = accountMapper.updateById(account);
-    System.out.println(i);
+//    Date date = new Date();
+//    Account account = new Account("1","1","1",3000.00D,0,0,date,"1111111");
+//    int i = accountMapper.updateById(account);
+//    System.out.println(i);
   }
 
   @Test
@@ -100,8 +100,12 @@ class MoneySysApplicationTests {
   @Test
   void userTest() throws UnsupportedEncodingException, NoSuchAlgorithmException, UsernameInDBException {
     Date date = new Date();
-    User user = new User("1", "root", "yu", "root", "18502713475", date, 0, 0);
-    userService.insertUser(user);
+    for (int i = 0; i < 20; i++) {
+      User user = new User(10+i+"", "test"+10+i, "test"+10+i, "root", "18502713475", date, 0, 0);
+      userService.insertUser(user);
+    }
+//    User user = new User("1", "root", "yu", "root", "18502713475", date, 0, 0);
+
   }
 
   @Test
@@ -134,6 +138,28 @@ class MoneySysApplicationTests {
     strings.add("3");
     strings.add("4");
     userMapper.deleteBatchIds(strings);
+  }
+
+  @Test
+  void selectAccount(){
+    List<Account> accountsAndUsername = accountMapper.getAccountsAndUsername(0L, 15L);
+    System.out.println(accountsAndUsername);
+  }
+
+  @Test
+  void updateAccount(){
+    Account account = new Account();
+    account.setAid("1");
+    account.setUid("2");
+    account.setAid_t("3");
+    account.setMoney(1314D);
+    account.setIsOut(1);
+    account.setTime(new Date());
+
+
+
+
+    accountMapper.updateById(account);
   }
 
 }

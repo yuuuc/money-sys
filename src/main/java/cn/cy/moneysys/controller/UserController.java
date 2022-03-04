@@ -6,6 +6,7 @@ import cn.cy.moneysys.service.UserService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +38,17 @@ public class UserController {
         }
     }
 
+    @GetMapping("/getUserById")
+    public Msg getUserById(@RequestParam(value = "uid") String uid){
+        try {
+            User user = userService.selectUserById(uid);
+            return Msg.createMsg("ok").addData("user",user);
+        }catch (Exception e){
+            log.info("getUserById: " + e.getMessage());
+            return Msg.createMsg("ng");
+        }
+    }
+
     /**
      * getUsersBySearch
      * @param current
@@ -54,6 +66,20 @@ public class UserController {
             return Msg.createMsg("ok").addData("userPage", userPage);
         }catch (Exception e){
             log.info("getUsersBySearch: "+ e.getMessage());
+            return Msg.createMsg("ng");
+        }
+    }
+
+    /**
+     * insertUser
+     */
+    @PostMapping("/newUser")
+    public Msg insertUser(@RequestBody @Validated User user){
+        try {
+            userService.insertUser(user);
+            return Msg.createMsg("ok");
+        }catch (Exception e){
+            log.info("insertUser: " + e.getMessage());
             return Msg.createMsg("ng");
         }
     }

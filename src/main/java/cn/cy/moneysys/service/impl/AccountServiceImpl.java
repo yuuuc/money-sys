@@ -21,13 +21,39 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Page<Account> selectAccountList(Page accountPage) {
-        Page page = accountMapper.selectPage(accountPage,new QueryWrapper<Account>());
-        return page;
+        Long aLong = accountMapper.selectCount(new QueryWrapper<Account>());
+        accountPage.setTotal(aLong);
+        accountPage.setPages(aLong % accountPage.getSize() == 0 ? aLong / accountPage.getSize() : aLong / accountPage.getSize() + 1 );
+        if (accountPage.getCurrent() > accountPage.getPages()){
+            accountPage.setCurrent(accountPage.getPages());
+        }
+        if(accountPage.getCurrent() <= 0){
+            accountPage.setCurrent(1);
+        }
+        List<Account> accountsAndUsername = accountMapper.getAccountsAndUsername((accountPage.getCurrent() - 1) * accountPage.getSize(), accountPage.getSize());
+        accountPage.setRecords(accountsAndUsername);
+        return accountPage;
     }
 
     @Override
     public Page<Account> selectAccountListByUserId(Page accountPage, String uid) {
         return accountMapper.selectPage(accountPage,new QueryWrapper<Account>().eq("uid",uid).orderByAsc("time"));
+    }
+
+    @Override
+    public Page<Account> selectAccountListByUsername(Page accountPage, String value) {
+        Long total = accountMapper.getCountByUid(value);
+        accountPage.setTotal(total);
+        accountPage.setPages(total % accountPage.getSize() == 0 ? total / accountPage.getSize() : total / accountPage.getSize() + 1 );
+        if (accountPage.getCurrent() > accountPage.getPages()){
+            accountPage.setCurrent(accountPage.getPages());
+        }
+        if(accountPage.getCurrent() <= 0){
+            accountPage.setCurrent(1);
+        }
+        List<Account> accountsByUsername = accountMapper.getAccountsByUsername((accountPage.getCurrent() - 1) * accountPage.getSize(), accountPage.getSize(), value);
+        accountPage.setRecords(accountsByUsername);
+        return accountPage;
     }
 
     @Override
@@ -37,12 +63,14 @@ public class AccountServiceImpl implements AccountService {
         if(days > 30){
             throw new SelectAccountSizeMoreThan30Exception("select Account Size more than 30");
         }
-        return accountMapper.selectList(new QueryWrapper<Account>().eq("uid", uid).between("time", startTime, endTime).orderByAsc("time"));
+        return accountMapper.getAccountsByTime(startTime,endTime,uid);
     }
 
     @Override
     public void insetAccount(Account account) {
         account.setAid(UUID.getId());
+        Date date = new Date();
+        account.setTime(date);
         accountMapper.insert(account);
     }
 

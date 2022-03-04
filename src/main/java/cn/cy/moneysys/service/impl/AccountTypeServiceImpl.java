@@ -23,7 +23,16 @@ public class AccountTypeServiceImpl implements AccountTypeService {
 
     @Override
     public Page<AccountsType> selectAccountTypeByPage(Page accountTypePage) {
-        return accountsTypeMapper.selectPage(accountTypePage,new QueryWrapper<AccountsType>());
+        Page tempPage = accountsTypeMapper.selectPage(accountTypePage, new QueryWrapper<AccountsType>());
+        if (tempPage.getCurrent() > tempPage.getPages()){
+            accountTypePage.setCurrent(tempPage.getPages());
+            tempPage = accountsTypeMapper.selectPage(accountTypePage, new QueryWrapper<AccountsType>());
+        }
+        if (tempPage.getCurrent() <= 0) {
+            accountTypePage.setCurrent(1);
+            tempPage = accountsTypeMapper.selectPage(accountTypePage, new QueryWrapper<AccountsType>());
+        }
+        return tempPage;
     }
 
     @Override
@@ -45,5 +54,11 @@ public class AccountTypeServiceImpl implements AccountTypeService {
     @Override
     public void updateAccountType(AccountsType accountsType) {
         accountsTypeMapper.updateById(accountsType);
+    }
+
+    @Override
+    public AccountsType selectAccountTypeByTitle(String value) {
+
+        return accountsTypeMapper.selectOne(new QueryWrapper<AccountsType>().eq("title",value));
     }
 }
