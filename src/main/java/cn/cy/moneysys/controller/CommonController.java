@@ -29,9 +29,7 @@ public class CommonController {
     @PostMapping("/login")
     public Msg login(@RequestBody User user){
         try{
-            System.out.println(user);
             User dbUser = userService.selectByNameAndPassword(user);
-            System.out.println(dbUser);
             if(dbUser == null){
                 return Msg.createMsg("fail");
             }else{

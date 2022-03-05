@@ -8,13 +8,14 @@ spring:
 
 mybatis-plus:
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+   # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: false #数据库下划线自动转换为驼峰
   mapper-locations: classpath:mapper/*Mapper.xml #mapper 映射文件
 
 logging:
   file:
-    path: D:\log\
+    path: /data/moneysys/log/
   level:
     root: info
+
 

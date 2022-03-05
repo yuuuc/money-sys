@@ -24,7 +24,6 @@ public class rootInterceptor implements HandlerInterceptor {
                 return true;
             }
             String uid = request.getHeader("Auth");
-            System.out.println(uid);
             User user = userService.selectUserById(uid);
             if(user != null){
                 return true;
